@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import backbtn from "../../backgroundImages/backbtn.png";
 import start from "../../backgroundImages/start.png";
@@ -6,7 +6,20 @@ import spin from "../../backgroundImages/spin.png";
 import wheelbg from "../../backgroundImages/frame.png";
 import asset7 from "../../backgroundImages/spinner.png";
 import asset6 from "../../backgroundImages/Asset 6.png";
-import arrow from "../../backgroundImages/arrow.png"
+import arrow from "../../backgroundImages/arrow.png";
+import medrep from "../../backgroundImages/medrep.png";
+import reveal from "../../backgroundImages/reveal.png";
+import answer1 from "../../backgroundImages/answer1.pdf";
+import answer2 from "../../backgroundImages/answer2.pdf";
+import answer3 from "../../backgroundImages/answer3.pdf";
+import answer4 from "../../backgroundImages/answer4.pdf";
+import answer5 from "../../backgroundImages/answer5.pdf";
+import answer6 from "../../backgroundImages/answer6.pdf";
+import answer7 from "../../backgroundImages/answer7.pdf";
+import answer8 from "../../backgroundImages/answer8.pdf";
+import answer9 from "../../backgroundImages/answer9.pdf";
+// audio file
+import bgAudio from "../../backgroundAudio/bgAudio.mp3";
 // All necessary CSS is now included via this Style component.
 const Style = () => (
     <style>{`
@@ -48,55 +61,165 @@ const Style = () => (
           z-index: 10;
         }
        
-        .question-box {
-          margin-top: 2.5rem; /* Increased margin */
-          padding: 1.5rem;
-          background-color: rgba(255, 255, 255, 0.1);
-          border-radius: 1rem;
-          color: white;
-          width: 90%; /* Responsive width for the box */
-          max-width: 500px; /* Max width for readability */
-          text-align: center;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(10px);
-          /* Correct centering for a block element */
-          margin-left: auto;
-          margin-right: auto;
-        }
+         /* ---------- question box (layout with medrep image) ---------- */
+    .question-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      color: white;
+      width: 94%;
+      max-width: 800px;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-sizing: border-box;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
 
-        .question-box h2 {
-          font-size: 1.7rem; /* Larger font for heading */
-          font-weight: bold;
-          margin-bottom: 0.7rem;
-          color: #f59e0b; /* amber-500 */
-        }
-        .question-box p {
-          font-size: 1.3rem; /* Slightly larger paragraph font */
-          font-family: cursive;
-          margin-bottom: 1.2rem;
-          color: white;
-          line-height: 1.5; /* Improved readability */
-        }
-       
-        .done-msg {
-          margin-top: 2.5rem;
-          font-size: 1.4rem;
-          font-weight: bold;
-          color: white;
-          text-align: center;
-          width: 100%;
-          padding: 0 1rem; /* Add padding to prevent text touching edges on small screens */
-          box-sizing: border-box;
-        }
-        .feedback-message {
-            margin-top: 1.5rem;
-            font-size: 1.2rem;
-            color: #f87171; /* red-400 */
-            font-weight: bold;
-            text-align: center;
-            padding: 0 1rem;
-            box-sizing: border-box;
-        }
+    .question-media {
+      flex: 0 0 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .medrep-img {
+      width: 78px;
+      height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+    
+    }
+
+    .question-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .question-content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+      color: #f59e0b;
+    }
+
+    .question-text {
+      font-size: 1.05rem;
+      line-height: 1.4;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      max-height: 220px; /* limits height for very long content */
+      overflow: auto;
+      padding-right: 8px; /* breathing room for scrollbar */
+    }
+
+    .question-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    /* ---------- timer ---------- */
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-weight: 600;
+      margin-left: auto;
+    }
+   
+   
+
+    /* ---------- done/feedback messages ---------- */
+    .feedback-message, .done-msg {
+      margin-top: 1rem;
+      color: #ff9b9b;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* ---------- lightweight responsive modal for PDF ---------- */
+    .pdf-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .pdf-modal {
+      width: min(1200px, 95vw);
+      max-height: 94vh;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+    .pdf-modal .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #e6e6e6;
+    }
+    .pdf-modal .modal-actions button {
+      margin-left: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #fff;
+    }
+    .pdf-modal .pdf-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ddd;
+    }
+    .pdf-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pdf-inner {
+      width: 100%;
+      height: 100%;
+    }
+    .pdf-inner object, .pdf-inner iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+      .reveal-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+    }
+
+    .reveal-btn:acti
         /* Adjustments for SVG text */
         .wheel-svg text {
           font-size: 12px; /* Base font size */
@@ -157,7 +280,14 @@ const Style = () => (
             .wheel-svg text {
                 font-size: 16px;
         }
-}
+    }
+          /* ---------- responsive small screens ---------- */
+    @media (max-width: 640px) {
+      .question-box { flex-direction: row; align-items: center; text-align: center; }
+      .question-media { flex: 0 0 auto; }
+      .medrep-img { width: 72px; height: 72px; }
+      .question-text { max-height: 180px; }
+    }
 
     `}</style>
 );
@@ -343,20 +473,20 @@ const colors = [
 
 const questions = {
     "Surprise!":
-        "You are visiting Dr. Badi at PSMMC. He wants more explanation on efficacy vs IIV for mismatched strains.",
+        "You are visiting Dr. Zeyad Consultant Pediatrician at Mediclinic Hospital, Dr. Zayed is currently prescribing FluMist, but he recently received information that FluMist has some component of Porcine and he is thinking to move again to IIV only?",
     "The Big Reveal!":
-        "You are visiting Dr. Rabieh at Dr. Suliman Al Habib Hospital. He wants to prioritize IIV for asthmatic patients.",
+        "You are visiting Dr. Rania Consultant Paediatrician at Mediclinic Hospital, Dr. Rania is currently supporting FluMist vaccination to children with asthma, but she wants to know more if it is safe for her patients on biological treatment ? ",
     "Mystery Pick!":
-        "You are visiting Dr. Jennifer at Al Salamah Hospital. She worries FluMist may be less effective in children on inhaled corticosteroids.",
+        "You are visiting Dr. Badi consultant Pediatric Infectious disease at PSMMC, He is currently willing to start flu vaccination to children with LAIV, but he had a concern regarding our efficacy data in comparison with IIV and asked for more explanation about how we could provide more reduction with the mismatched strains vs IIV?",
     "On the Spot!":
-        "You are visiting Dr. Rami at Prime Hospital. He doesn’t prescribe FluMist because insurance doesn’t cover it and it costs more.",
+        "You are visiting Dr. Rabieh consultant Pediatricians at Dr. Suliman Al Habib Hospital, He is currently willing to start flu vaccination to healthy children with LAIV, but he has a lot of Asthmatic patients visiting his clinic and he want to prioritize IIV only for them?",
     "Challenge Zone!":
-        "You are visiting Dr. Mai at Kings Hospital. She doubts FluMist effectiveness vs injectables and concerns about administration.",
+        "You are visiting Dr. Jennifer Specialist Pediatricians at Al Salamah Hospital; She is worried about giving FluMist to children who are currently on inhaled corticosteroids that may affect the efficacy of FluMist?",
     "Hot Seat!":
-        "You are visiting Dr. Mervat at MyClinic. She doubts FluMist safety for patients with medical conditions and prioritizes IIV.",
-    "Lucky Draw!": "Free discussion round!",
-    "Game On!": "Quick fire round with peers!",
-    "Question Unlocked!": "Open question for the group!",
+        "You are visiting Dr. Rami Specialist Pediatricians at Prime Hospital; He don’t like to prescribe FluMist as it’s not covered by the insurance and is more expensive than injectables?",
+    "Lucky Draw!": "You are visiting Dr. Mai Consultant Pediatricians at Kings Hospital; She doesn’t believe that FluMist is as effective as injectable vaccines, and has a doubt that administration mistakes (single nostril administration/ inadvertent half dose administration) can impact the right delivery and efficacy of the vaccine?",
+    "Game On!": "You are visiting Dr. Abdullah the clinical Pharmacist in Dallah Hospital, and he is asking about short shelf life of FluMist compared IIV?",
+    "Question Unlocked!": "Dr. Hassanein pediatrician from Al Ain mentioned that most of my patients live in big family houses alongside their grandparents, will FluMist be transmitted to their grandparents and put them at risk?"
 };
 
 const SpinWheel = () => {
@@ -366,6 +496,31 @@ const SpinWheel = () => {
     const [rotation, setRotation] = useState(0);
     const [feedback, setFeedback] = useState(""); // For user feedback
     const [gameStart, setGameStart] = useState(false);
+
+
+    // Timer states
+    const DEFAULT_TIME = 300; // seconds, adjust as needed
+    const [secondsLeft, setSecondsLeft] = useState(DEFAULT_TIME);
+    const [timerRunning, setTimerRunning] = useState(false);
+    const timerRef = useRef(null);
+
+    // PDF modal states
+    const [pdfOpen, setPdfOpen] = useState(false);
+    const [pdfZoom, setPdfZoom] = useState(1);
+    // If you uploaded the PDF to server / static hosting, replace below path with that hosted path.
+    // For demo local file (during dev), you might serve it from public folder and use "/files/answer.pdf"
+    const answers = {
+        "Surprise!": answer1,
+        "The Big Reveal!": answer2,
+        "Mystery Pick!": answer3,
+        "On the Spot!": answer4,
+        "Challenge Zone!": answer5,
+        "Hot Seat!": answer6,
+        "Lucky Draw!": answer7,
+        "Game On!": answer8,
+        "Question Unlocked!": answer9,
+    };
+
     // Function to get the currently pointed option based on rotation
     const getPointedOption = (currentRotation) => {
         const totalRotation = currentRotation % 360; // Normalize to 0-360
@@ -381,6 +536,7 @@ const SpinWheel = () => {
     };
 
     const handleSpin = () => {
+        playSound();
         if (spinning || disabled.length === wheelOptions.length) return;
         setSpinning(true);
         setFeedback(""); // Clear previous feedback
@@ -409,18 +565,65 @@ const SpinWheel = () => {
             setCurrent(choice);
             setDisabled((prev) => [...prev, choice]);
             setSpinning(false);
-
+            // start timer automatically when question appears
+            setSecondsLeft(DEFAULT_TIME);
+            setTimerRunning(true);
             if (disabled.includes(choice)) {
                 setFeedback(`You landed on "${choice}" which was already played. Please spin again!`);
             }
         }, 5000); // Match this duration with the motion transition duration
     };
 
-    const handleBack = () => setCurrent(null);
 
-    const handleStart = () => {
-        setGameStart(true)
-    }
+    const handleStart = () => setGameStart(true);
+    const handleBack = () => {
+        setCurrent(null);
+        setTimerRunning(false);
+        setSecondsLeft(DEFAULT_TIME);
+        setPdfOpen(false);
+        setPdfZoom(1);
+        stopSound()
+    };
+
+    // Timer effect for countdown
+    useEffect(() => {
+        if (timerRunning) {
+            timerRef.current = setInterval(() => {
+                setSecondsLeft((s) => {
+                    if (s <= 1) {
+                        clearInterval(timerRef.current);
+                        setTimerRunning(false);
+                        setFeedback("Time's up! Discuss the answer or reveal it.");
+                        return 0;
+                    }
+                    return s - 1;
+                });
+            }, 1000);
+        }
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, [timerRunning]);
+
+
+
+    // simple percent for progress bar (left -> used)
+    // convert seconds to mm:ss
+    const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+    const seconds = String(secondsLeft % 60).padStart(2, "0");
+    const timeFormatted = `${minutes}:${seconds}`;
+
+    const percentUsed = ((DEFAULT_TIME - secondsLeft) / DEFAULT_TIME) * 100;
+    // PDF modal controls
+    const openPdfModal = () => {
+        console.log("opening pdf for:", current, answers[current]);
+        setPdfOpen(true);
+        setPdfZoom(1);
+    };
+    const closePdfModal = () => setPdfOpen(false);
+    const zoomIn = () => setPdfZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)));
+    const zoomOut = () => setPdfZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)));
+
     // Use useEffect to log the current pointed option after rotation stops
     useEffect(() => {
         if (!spinning && rotation !== 0) {
@@ -428,7 +631,20 @@ const SpinWheel = () => {
 
         }
     }, [spinning, rotation, current]);
+    const audioRef = useRef(null);
 
+    const playSound = () => {
+        if (audioRef.current) {
+            audioRef.current.play();
+        }
+    };
+
+    const stopSound = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();     // pause the audio
+            audioRef.current.currentTime = 0; // reset to start
+        }
+    };
 
     return (
         <>
@@ -454,6 +670,8 @@ const SpinWheel = () => {
                 <div
                     className="game-container"
                 >
+                      {/* Hidden audio element */}
+                            <audio ref={audioRef} src={bgAudio} />
                     <Style />
                     {
                         current == null &&
@@ -567,26 +785,100 @@ const SpinWheel = () => {
                     }
                     {feedback && <p className="feedback-message">{feedback}</p>}
 
+                    {/* question displayed */}
                     {current && (
-                        <div className="question-box">
-                            <h2>{current}</h2>
-                            <p>{questions[current]}</p>
-                            <button onClick={handleBack}
-                                style={{
-                                    width: 100,
-                                    height: 100,
-                                    border: "none",
-                                    borderRadius: "50%",
-                                    backgroundImage: `url(${backbtn})`,
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center",
-                                    cursor: "pointer",
-                                }}
-                            />
+                        <div className="question-box" role="region" aria-label="question box">
+                          
+                            <div className="question-media">
+                                <img src={medrep} alt="medrep" className="medrep-img" />
+                            </div>
 
+                            <div className="question-content">
+                                <div style={{ display: "flex", gap: 32, marginLeft: "auto" }}>
+                                    {/* timer aligned to right */}
+                                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                        <div className="timer">
+                                            <div style={{ minWidth: 48, textAlign: "center" }}>{timeFormatted}</div>
+                                            <div aria-hidden>
+                                                <i style={{ width: `${percentUsed}%` }} />
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="reveal-btn"
+                                            onClick={openPdfModal}
+                                            title="Reveal Answer"
+                                            aria-label="Reveal Answer"
+                                            style={{
+                                                backgroundImage: `url(${reveal})`,
+                                                backgroundSize: "cover",
+                                                backgroundPosition: "center",
+                                                cursor: "pointer",
+                                                backgroundColor: "#27f10cc7"
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="question-text">
+                                    <p>{questions[current]}</p>
+                                </div>
+
+                                <div className="question-actions">
+                                    <button onClick={handleBack}
+                                        style={{
+                                            width: 90,
+                                            height: 90,
+                                            border: "none",
+                                            borderRadius: "50%",
+                                            backgroundImage: `url(${backbtn})`,
+                                            backgroundSize: "cover",
+                                            backgroundPosition: "center",
+                                            cursor: "pointer",
+                                        }}
+                                        aria-label="Back"
+                                    />
+
+                                    <div style={{ marginLeft: "auto" }}>
+                                        {disabled.length === wheelOptions.length && !current ? (
+                                            <p className="done-msg">🎉 All questions have been played!</p>
+                                        ) : null}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
 
+                    {/* PDF modal (lightweight) */}
+                    {pdfOpen && (
+                        <div className="pdf-modal-overlay" onClick={closePdfModal}>
+                            <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-top">
+                                    <div style={{ fontWeight: 700 }}>Answer PDF</div>
+                                    <div className="modal-actions">
+                                        <button onClick={zoomOut} aria-label="Zoom out">−</button>
+                                        <button onClick={zoomIn} aria-label="Zoom in">+</button>
+                                        <a href={answers[current]} target="_blank" rel="noreferrer">
+                                            <button aria-label="Open in new tab">Open</button>
+                                        </a>
+                                        <a href={answers[current]} download>
+                                            <button aria-label="Download">Download</button>
+                                        </a>
+                                        <button onClick={closePdfModal}>Close</button>
+                                    </div>
+                                </div>
+
+                                <div className="pdf-body">
+                                    <div className="pdf-wrapper">
+                                        <div className="pdf-inner" style={{ transform: `scale(${pdfZoom})`, transformOrigin: "top center" }}>
+                                            {/* object tag displays PDF in most browsers and scales. Fallback could be iframe */}
+                                            <object data={answers[current]} type="application/pdf" aria-label="Answer PDF">
+                                                <iframe src={answers[current]} title="answer-pdf" />
+                                            </object>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {disabled.length === wheelOptions.length && !current && (
                         <p className="done-msg">🎉 All questions have been played!</p>
                     )}
