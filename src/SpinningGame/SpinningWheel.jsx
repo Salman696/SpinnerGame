@@ -6,7 +6,7 @@ import spin from "../../backgroundImages/spin.png";
 import wheelbg from "../../backgroundImages/frame.png";
 import asset7 from "../../backgroundImages/spinner.png";
 import asset6 from "../../backgroundImages/Asset 6.png";
-
+import arrow from "../../backgroundImages/arrow.png"
 // All necessary CSS is now included via this Style component.
 const Style = () => (
     <style>{`
@@ -37,7 +37,7 @@ const Style = () => (
         .arrow {
           width: 110px;                 
           height: 60px;
-          background-image: url("../../backgroundImages/arrow.png"); 
+          background-image: url(${arrow});  
           background-size: contain;    
           background-repeat: no-repeat;
           background-position: center;
