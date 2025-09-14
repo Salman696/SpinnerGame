@@ -109,7 +109,7 @@ const Style = () => (
     }
 
     .question-text {
-      font-size: 1.05rem;
+      font-size: 1.3rem;
       line-height: 1.4;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
@@ -158,7 +158,8 @@ const Style = () => (
     }
     .pdf-modal {
       width: min(1200px, 95vw);
-      max-height: 94vh;
+      height: -webkit-fill-available;
+
       background: #fff;
       border-radius: 12px;
       overflow: hidden;
@@ -245,15 +246,15 @@ const Style = () => (
                 padding: 1rem 3rem;
             }
             .question-box {
-                max-width: 600px; /* Max width on desktops */
-                padding: 2rem;
+                
+                padding: 1rem;
             }
             .question-box h2 {
                 font-size: 2rem;
             }
             .question-box p {
                 font-family: cursive;
-                font-size: 1.8rem;
+                font-size: 1.3rem;
             }
             .wheel-svg text {
                 font-size: 14px; /* Even larger font on desktops */
@@ -275,7 +276,7 @@ const Style = () => (
                 font-size: 2.4rem;
         }
             .question-box p {
-                font-size: 2rem;
+                font-size: 1.3rem;
         }
             .wheel-svg text {
                 font-size: 16px;
@@ -286,7 +287,7 @@ const Style = () => (
       .question-box { flex-direction: row; align-items: center; text-align: center; }
       .question-media { flex: 0 0 auto; }
       .medrep-img { width: 72px; height: 72px; }
-      .question-text { max-height: 180px; }
+      .question-text { max-height: 180px; font-size: 1.0rem; }
     }
 
     `}</style>
@@ -616,7 +617,6 @@ const SpinWheel = () => {
     const percentUsed = ((DEFAULT_TIME - secondsLeft) / DEFAULT_TIME) * 100;
     // PDF modal controls
     const openPdfModal = () => {
-        console.log("opening pdf for:", current, answers[current]);
         setPdfOpen(true);
         setPdfZoom(1);
     };
@@ -670,8 +670,8 @@ const SpinWheel = () => {
                 <div
                     className="game-container"
                 >
-                      {/* Hidden audio element */}
-                            <audio ref={audioRef} src={bgAudio} />
+                    {/* Hidden audio element */}
+                    <audio ref={audioRef} src={bgAudio} />
                     <Style />
                     {
                         current == null &&
@@ -728,8 +728,7 @@ const SpinWheel = () => {
                                                 const lineHeight = 14;
                                                 // Calculate initial dy to vertically center the whole text block
                                                 const initialDy = -((words.length - 1) * lineHeight) / 2;
-                                                console.log(disabled, "  disabled ones");
-
+                                                
                                                 return (
                                                     <g key={i}>
                                                         <path
@@ -788,7 +787,7 @@ const SpinWheel = () => {
                     {/* question displayed */}
                     {current && (
                         <div className="question-box" role="region" aria-label="question box">
-                          
+
                             <div className="question-media">
                                 <img src={medrep} alt="medrep" className="medrep-img" />
                             </div>
@@ -804,18 +803,15 @@ const SpinWheel = () => {
                                             </div>
                                         </div>
                                         <button
-                                            className="reveal-btn"
+
                                             onClick={openPdfModal}
                                             title="Reveal Answer"
                                             aria-label="Reveal Answer"
                                             style={{
-                                                backgroundImage: `url(${reveal})`,
-                                                backgroundSize: "cover",
-                                                backgroundPosition: "center",
-                                                cursor: "pointer",
-                                                backgroundColor: "#27f10cc7"
+                                                color: "white",
+                                                backgroundColor: "#ff0000e8"
                                             }}
-                                        />
+                                        >Reveal</button>
                                     </div>
                                 </div>
                                 <div className="question-text">
@@ -882,7 +878,7 @@ const SpinWheel = () => {
                     {disabled.length === wheelOptions.length && !current && (
                         <p className="done-msg">🎉 All questions have been played!</p>
                     )}
-                </div>
+                </div >
             }
         </>
     );
