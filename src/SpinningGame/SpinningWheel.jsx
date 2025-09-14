@@ -8,7 +8,6 @@ import asset7 from "../../backgroundImages/spinner.png";
 import asset6 from "../../backgroundImages/Asset 6.png";
 import arrow from "../../backgroundImages/arrow.png";
 import medrep from "../../backgroundImages/medrep.png";
-import reveal from "../../backgroundImages/reveal.png";
 import answer1 from "../../backgroundImages/answer1.pdf";
 import answer2 from "../../backgroundImages/answer2.pdf";
 import answer3 from "../../backgroundImages/answer3.pdf";
